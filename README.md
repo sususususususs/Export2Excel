@@ -6,12 +6,14 @@
 
 首先，需要下载
 
-> npm install -S file-saver xlsx
-> npm install -D script-loader
+```powershell
+    npm install -S file-saver xlsx
+    npm install -D script-loader
+```
 
 然后将Blob.js和Export2Excel.js放到项目文件目录下，我这里将这两个文件都放到了lib文件夹下
 
-** 如果只需要Export2Excel和Blob文件可以不用往下看了，直接下载即可 **
+**如果只需要Export2Excel和Blob文件可以不用往下看了，直接下载即可**
 
 toExcel.js是我封装的一个导出的方法，放在了utils文件下
 
@@ -42,31 +44,31 @@ export default = {
 }
 ```
 
-##### tHeader:[]
+#### tHeader:[]
 
-与数据绑定的表头label，如：['日期'，'姓名'，'性别'，'住址'，'爱好'，'状态']
+与数据绑定的表头label，如：`['日期'，'姓名'，'性别'，'住址'，'爱好'，'状态']`
 
-##### filterVal:[]
+#### filterVal:[]
 
-与数据绑定的表头prop，如：['date', 'name', 'gender', 'address', 'hobby', 'status']，与数据字段和表头label一一对应
+与数据绑定的表头prop，如：`['date', 'name', 'gender', 'address', 'hobby', 'status']`，与数据字段和表头label一一对应
 
-##### multiHeader:[]
+#### multiHeader:[]
 
 `可选`
 与数据绑定无关的表头label，多级表头会形成嵌套关系，比如表头有日期、姓名、性别、详情，在详情下面有住址、爱好、状态等
-在multiHeader中传入['', '', '', '详情','', '']即可
+在multiHeader中传入`['', '', '', '详情','', '']`即可
 
 multiHeader、filterVal、tHeader的长度是一致的，日期、姓名、性别没有一级表头的用''，而住址，爱好，状态属于同一个一级表头，在第一个住址传入一级表头的label，后面的用''即可，导出的Excel会将住址、爱好、状态的一级表头合并为一个单元格
 
-##### tabledata:[]
+#### tabledata:[]
 
-要导出的数据，也就是与表格绑定的数据，直接传进来即可，如： {date: xxxx,name: '小明', ...}
+要导出的数据，也就是与表格绑定的数据，直接传进来即可，如： `{date: xxxx,name: '小明', ...}`
 
-##### sums:[]
+#### sums:[]
 
 可选，部分表格下面有对上面数据的合计，需要传入统计好的数据数组，要与前面的数组长度一致，缺少的项用空字符串占位
 
-##### title
+#### title
 
 导出数据的Excel文件的名字。默认为Excel
 
