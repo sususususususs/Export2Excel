@@ -1,75 +1,102 @@
-项目使用技术栈vue-elementUI-admin，其自带导出Excel功能，但只适用于导出一级表头，不适用于导出多级表头，不符合需求，我这里将Export2Excel源码作出了部分修改，增加了：
+项目技术栈vue-elementUI-admin，其导出Excel功能只适用于一级表头，不适用于多级表头不符合需求，我将Export2Excel代码作出了部分修改，增加了：
 
 - 二级表头
 - 合并表头单元格
 - 合计
 
-首先，需要下载
+首先下载
 
 ```powershell
     npm install -S file-saver xlsx
     npm install -D script-loader
 ```
 
-然后将Blob.js和Export2Excel.js放到项目文件目录下，我这里将这两个文件都放到了lib文件夹下
+这里我将Blob和Export2Excel放到了文件夹lib中
 
-**如果只需要Export2Excel和Blob文件可以不用往下看了，直接下载即可**
+**以下是个人修改新增功能说明！只需要js文件的直接下载即可！**
 
-toExcel.js是我封装的一个导出的方法，放在了utils文件下
+------
 
-使用：在需要导出Excel表格的.vue文件中
+我将基于功能需求封装的toExcel文件放在了utils中，可自行参考
+
+使用：在.vue文件中
 
 ```javascript
 import exportExcel from '@/utils/toExcel.js'
 
 export default = {
     methods: {
-        // 点击按钮导出Excel
+        // 点击导出Excel, [r]标识表示必传参数
         click() {
             exportExcel({
-                // 与数据绑定的表头的label
-                tHeader: [],
-                // 与数据绑定的表头的prop
-                filterVal: [],
-                // 与数据绑定无关的表头的label
-                multiHeader: [],
-                // 表格数据
-                tabledata: [],
-                // 表格合计
-                sums: [],
-                title: ''
+                tHeader: [],    // 一级表头显示文字[r]，如：[姓名, 年龄, 性别, 分数]
+                filterVal: [],  // 一级表头数据字段[r]，如：[name, age, gender, score]
+                multiHeader: [],// 二级表头显示文字   ，如：['', '详情', '', '']
+                tabledata: [],  // 表格数据[r]       ，如：传入要导出的数据
+                sums: [],       // 表格合计          ，如：['合计', '', '', 100]
+                title: ''       // 导出的Excel文件名，默认为Excel
             })
         }
     }
 }
 ```
 
-#### tHeader:[]
+最终导出为
 
-与数据绑定的表头label，如：`['日期'，'姓名'，'性别'，'住址'，'爱好'，'状态']`
 
-#### filterVal:[]
+<table>
+    <thead>
+        <tr>
+            <th rowspan="2" style='text-align:center;' >姓名</th>
+            <th colspan="3" style='text-align:center;' >详情</th>
+        </tr>
+        <tr>
+        	<th style='text-align:center;' >年龄</th>
+            <th style='text-align:center;' >性别</th>
+            <th style='text-align:center;' >分数</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style='text-align:center;' >小明</td>
+            <td style='text-align:center;' >18</td>
+            <td style='text-align:center;' >男</td>
+            <td style='text-align:center;' >100</td>
+        </tr>
+        <tr>
+            <td style='text-align:center;' >合计</td>
+            <td style='text-align:center;' >&nbsp;</td>
+            <td style='text-align:center;' >&nbsp;</td>
+            <td style='text-align:center;' >100</td>
+        </tr>
+    </tbody>
+</table>
 
-与数据绑定的表头prop，如：`['date', 'name', 'gender', 'address', 'hobby', 'status']`，与数据字段和表头label一一对应
 
-#### multiHeader:[]
+ 
+**注意**
 
-`可选`
-与数据绑定无关的表头label，多级表头会形成嵌套关系，比如表头有日期、姓名、性别、详情，在详情下面有住址、爱好、状态等
-在multiHeader中传入`['', '', '', '详情','', '']`即可
+1. `[r]`表示必传参数
+2. 表头文字`tHeader`与数据字段`filterVal`要一一对应
+3. 如传入二级表头`multiHeader`，除其包含的第一个子表头对应为文本外，其余表头全部为`''`，导出会合并表头单元格
 
-multiHeader、filterVal、tHeader的长度是一致的，日期、姓名、性别没有一级表头的用''，而住址，爱好，状态属于同一个一级表头，在第一个住址传入一级表头的label，后面的用''即可，导出的Excel会将住址、爱好、状态的一级表头合并为一个单元格
+   如实现下表格，则`multiHeader: ['', '详情', '其他', '']`
+    
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2" style='text-align:center;' >姓名</th>
+                <th style='text-align:center;' >详情</th>
+                <th colspan="2" style='text-align:center;' >其他</th>
+            </tr>
+            <tr>
+                <th style='text-align:center;' >年龄</th>
+                <th style='text-align:center;' >性别</th>
+                <th style='text-align:center;' >分数</th>
+            </tr>
+        </thead>
+    </table>
 
-#### tabledata:[]
-
-要导出的数据，也就是与表格绑定的数据，直接传进来即可，如： `{date: xxxx,name: '小明', ...}`
-
-#### sums:[]
-
-可选，部分表格下面有对上面数据的合计，需要传入统计好的数据数组，要与前面的数组长度一致，缺少的项用空字符串占位
-
-#### title
-
-导出数据的Excel文件的名字。默认为Excel
-
-> 注意： 表格使用elementUI的索引序号功能的，在表头的label和filterVal中要把序号所对应的那项去掉
+4. 合计`sums`为对应列数据的合计，无需合计的项使用`''`
+5. 表格如使用elementUI序号索引功能，传入的`tHeader`和`filterVal`应将序号项去掉
+6. `tHeader`、`filterVal`、`multiHeader`、`sums`的长度应一致
